@@ -1,0 +1,3 @@
+INFO:root:Section ended
+DEBUG:matplotlib.pyplot:Loaded backend module://ipykernel.pylab.backend_inline version unknown.
+INFO:root:Qontroller 'Q8b-036C' initialised with firmware v2.4.1 and 8 channels

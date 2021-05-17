@@ -1,0 +1,11 @@
+%22/04/2021 10:53:23
+%Laser Wavelength:697[nm]
+%Laser Power:5[mW]
+%Amplifier Gain:40[dB]
+%1-2
+%0.00.0
+%12.012.0
+%0.20.2
+%1
+%Swipe sulla tensione con onda sinusoidale su un canale, canali rimanenti a 0 V.Chip Q2-2+8
+%PD at channel 3: Voltage [mV]	Current [mA]	Channel 0 : Voltage [V]	Current [mA]	Channel 0 : Voltage [V]	Current [mA]

@@ -1,0 +1,5 @@
+INFO:root:Section ended
+DEBUG:matplotlib.pyplot:Loaded backend module://ipykernel.pylab.backend_inline version unknown.
+INFO:root:Qontroller 'Q8b-036C' initialised with firmware v2.4.1 and 8 channels
+INFO:root:Capturing at sample interval  2.500E+05 ns, with total sampling time of  1.250E+07 ns
+INFO:root:Section ended
