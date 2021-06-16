@@ -1,9 +1,10 @@
-Log: contiene log di misure fatte il 20/01/2021 al BO1, pilotando in tensione (sweep con onda triangolare) un Mach-Zehnder, cambiando fibra di input e fibra di output (CIS e Trans).
+#Controllo Multicanale
+_Log_ folder : contains all measurements logs done at the BO1 lab by voltage driving a single MZI, with different input and output fiber (CIS & Trans).
 
-Figures: contiene le immagini prodotte da Controllo Multicanale - onda triangolare.ipynb.
+_Figures_ folder : contains the images produced by the file _Controllo Multicanale - onda triangolare.ipynb_.
 
-Controllo Multicanale - onda triangolare.ipynb: Il programma controlla in tensione i canali specificati nella lista "channels" con uno sweep da "voltage_start'' a ''voltage_stop'' per poi tornare a "voltage_start'', legge le rispettive tensioni e correnti, le salva su file e le visualizza a video con grafici. 
+_Controllo Multicanale - onda triangolare.ipynb_ : an interactive python notebook for voltage driving the specified channels of the Q8b driver, from a sweep from "voltage_start" to "voltage_stop" and back to "voltage_start". It measures the voltages and currents, save them on file and visualize them on plots. 
 
-Plot generator.ipynb: Il programma apre un file .txt di misure di sweep di tensione, ricostruisce le liste di misure originali, le plotta e ne salva le immagini. Ciascun plot può essere sovrapposto o affiancato. 
+_Plot generator.ipynb_ : an interactive python notebook that opens te .txt data file, builds the original data, plot them and save the resulting images. 
 
-Mass File Renamer.ipynb: Il programma adegua tutti i .txt contenuti in Log, rinominandoli con lo stesso pattern ( da ['Multiple', 'channels', 'control', '2021', '1', '20', '12', '36', '52'] a ['Multiple', 'channels', 'control', '20', '01', '2021', '17', '16', '30']).
+_Mass File Renamer.ipynb_ : an interactive python notebook that collectively rename all the .txt contained in the _Log_ folder. Used to ensure that alle the .txt files obey to the predefined nomenclature. E.g.: ['Multiple', 'channels', 'control', '20', '01', '2021', '17', '16', '30']).
