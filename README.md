@@ -12,4 +12,4 @@ The system is able to:
 Each measurement is saved with a pre-determined formatting into .txt files and plotted in a MATLab-like plot.
 
 The entire architecture is tested through Jupyter Notebook and in the "MyCustomPackage", by running the _Required Packages.ipynb_ you can install all the required packages.
-Finally, all the custom functions are collected together in the _mycustommodule.com_ custom module.
+Finally, all the custom functions are collected together in the _mycustommodule.py_ custom module.
