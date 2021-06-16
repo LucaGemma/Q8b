@@ -1,4 +1,4 @@
-#Controllo Multicanale
+# Controllo Multicanale
 _Log_ folder : contains all measurements logs done at the BO1 lab by voltage driving a single MZI, with different input and output fiber (CIS & Trans).
 
 _Figures_ folder : contains the images produced by the file _Controllo Multicanale - onda triangolare.ipynb_.
