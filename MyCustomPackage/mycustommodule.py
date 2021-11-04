@@ -2,7 +2,6 @@
 # coding: utf-8
 
 # # My Custom Module
-# Il programma apre un file .txt di misure di sweep di tensione, ricostruisce le liste di misure originali, le plotta e ne salva le immagini. Ciascun plot può essere sovrapposto o affiancato. 
 # 
 
 # In[1]:
@@ -18,6 +17,7 @@ import time
 import numpy as np
 import datetime
 import os
+import wx # needed to take a screenshot
 
 # Set the right path and file
 lines = [] # list of lines of the .txt file
@@ -118,6 +118,31 @@ def read_data(data_filename, FILE_PV = False):
         return {'measured voltage' : measured_voltage, 'measured current' : measured_current, 'PD voltage' : PD_voltage, 'PD current' : PD_current, 'P heater' : P_heater, 'channels' : channels}
     else:
         return {'measured voltage' : measured_voltage, 'measured current' : measured_current, 'PD voltage' : PD_voltage, 'PD current' : PD_current, 'channels' : channels}
+
+
+# In[12]:
+
+
+def take_screenshot(save_path=os.getcwd()):
+    """
+    Take a screenshot of the entire screen and save it in the save_path directory with
+    the timestamp as its name
+    """
+    #take a bitmap
+    wx.App()  # Need to create an App instance before doing anything
+    screen = wx.ScreenDC()
+    now = datetime.datetime.now() # retrieve current date and time (for file name)
+    size = screen.GetSize()
+    bmp = wx.Bitmap(size[0], size[1])
+    mem = wx.MemoryDC(bmp)
+    mem.Blit(0, 0, size[0], size[1], screen, 0, 0)
+    del mem  # Release bitmap
+    
+    #take the timestamp
+    timestamp = now.strftime("%Y_%m_%d_%H_%M_%S")
+    
+    #save the screenshot in a png file 
+    bmp.SaveFile(save_path + '/' + timestamp + '.png', wx.BITMAP_TYPE_PNG) # it is saved where the ipynb is
 
 
 # os.chdir('./Log') 
