@@ -4,13 +4,21 @@
 # # My Custom Module
 # 
 
-# In[1]:
+# In[2]:
 
 
 # Required imports
 import sys
 username = 'admin' # 'admin' for BO1 lab
 sys.path.append('c:/users/'+ username +'/miniconda3/lib/site-packages')
+import picosdk
+import logging
+import ctypes
+from picosdk.ps4000 import ps4000 as ps #
+import matplotlib.pyplot as plt
+from picosdk.functions import adc2mV, assert_pico_ok
+from statistics import mean
+import math
 import matplotlib.pyplot as plt
 import qontrol
 import time
@@ -18,6 +26,8 @@ import numpy as np
 import datetime
 import os
 import wx # needed to take a screenshot
+
+get_ipython().run_line_magic('matplotlib', 'inline')
 
 # Set the right path and file
 lines = [] # list of lines of the .txt file
@@ -29,8 +39,13 @@ voltage_start = [] # list of voltage starting values for each channel/try
 voltage_stop = []  # list of voltage stopping values for each channel/try
 voltage_step = []  # list of voltage steps for each channel/try
 
+#Configure the logging
+logging.basicConfig(level=logging.INFO)
+logging.getLogger().setLevel(logging.INFO)
+chandle = ctypes.c_int16()
 
-# In[2]:
+
+# In[3]:
 
 
 def from_linenumb_to_active_channel(line_numb, channel_steps):
@@ -120,7 +135,7 @@ def read_data(data_filename, FILE_PV = False):
         return {'measured voltage' : measured_voltage, 'measured current' : measured_current, 'PD voltage' : PD_voltage, 'PD current' : PD_current, 'channels' : channels}
 
 
-# In[3]:
+# In[4]:
 
 
 def take_screenshot(save_path=os.getcwd()):
@@ -150,31 +165,9 @@ def take_screenshot(save_path=os.getcwd()):
 # In[5]:
 
 
-import sys
-username = 'admin' # 'admin' for BO1 lab
-sys.path.append('c:/users/' + username + '/picosdk-python-wrappers')
-import picosdk
-import os
-os.getcwd()
-import logging
-import ctypes
-import numpy as np #
-from picosdk.ps4000 import ps4000 as ps #
-import matplotlib.pyplot as plt
-from picosdk.functions import adc2mV, assert_pico_ok
-from statistics import mean
-import time
-import math
-
-get_ipython().run_line_magic('matplotlib', 'inline')
-
 def round_half_up(n, decimals=0):
     multiplier = 10 ** decimals
     return math.floor(n*multiplier + 0.5) / multiplier
-
-#Configure the logging
-logging.basicConfig(level=logging.INFO)
-logging.getLogger().setLevel(logging.INFO)
 
 def streaming_callback(handle, noOfSamples, startIndex, overflow, triggerAt, triggered, autoStop, param):
     global nextSample, autoStopOuter, wasCalledBack
@@ -187,9 +180,31 @@ def streaming_callback(handle, noOfSamples, startIndex, overflow, triggerAt, tri
     if autoStop:
         autoStopOuter = True
 
-def pico_start():
-    # Create chandle and status ready for use
-    chandle = ctypes.c_int16()
+def pico_start(channel_range, sampleInterval = ctypes.c_int32(250), sampleUnits = ps.PS4000_TIME_UNITS['PS4000_US'], sizeOfOneBuffer = 500, numBuffersToCapture = 10, maxPreTriggerSamples = 0, autoStopOn = 1, downsampleRatio = 1):
+    """
+    channel range : ps.PS4000_RANGE['PS4000_2V']
+    sampleInterval : ctypes.c_int32(250) in sample units specified by sampleUnits
+    sampleUnits = ps.PS4000_TIME_UNITS['PS4000_US']
+    sizeOfOneBuffer = 500 size of a single buffer
+    numBuffersToCapture = 10 --> totalSamples = sizeOfOneBuffer * numBuffersToCapture
+    
+    Note:   actualSampleInterval = sampleInterval.value
+            actualSampleIntervalNs = actualSampleInterval * 1000
+            totalSamplingTime = totalSamples * actualSampleIntervalNs
+            # If we are not triggering:
+            maxPreTriggerSamples = 0
+            autoStopOn = 1
+            # If we do not want downsampling:
+            downsampleRatio = 1
+    """
+    
+    # Size of capture
+    sizeOfOneBuffer = 500
+    numBuffersToCapture = 10
+
+    totalSamples = sizeOfOneBuffer * numBuffersToCapture
+    
+    # Create status ready for use
     status = {}
 
     # Open PicoScope 2000 Series device
@@ -211,7 +226,7 @@ def pico_start():
     # enabled = 1
     # coupling type = PS4000_DC = 1
     # range = PS4000_2V = 7
-    channel_range = ps.PS4000_RANGE['PS4000_2V']
+    #global channel_range = ps.PS4000_RANGE['PS4000_2V']
     status["setChA"] = ps.ps4000SetChannel(chandle,
                                             ps.PS4000_CHANNEL['PS4000_CHANNEL_A'],
                                             enabled,
@@ -232,11 +247,7 @@ def pico_start():
                                             channel_range)
     assert_pico_ok(status["setChB"])
 
-    # Size of capture
-    sizeOfOneBuffer = 500
-    numBuffersToCapture = 10
 
-    totalSamples = sizeOfOneBuffer * numBuffersToCapture
 
     # Create buffers ready for assigning pointers for data collection
     bufferAMax = np.zeros(shape=sizeOfOneBuffer, dtype=np.int16)
@@ -280,8 +291,8 @@ def pico_start():
     assert_pico_ok(status["setDataBuffersB"])
 
     # Begin streaming mode:
-    sampleInterval = ctypes.c_int32(250)
-    sampleUnits = ps.PS4000_TIME_UNITS['PS4000_US']
+    
+    
     # We are not triggering:
     maxPreTriggerSamples = 0
     autoStopOn = 1
@@ -293,9 +304,10 @@ def pico_start():
     totalSamplingTime = totalSamples * actualSampleIntervalNs
     logging.info("Capturing at sample interval %10.3E ns, with total sampling time of %10.3E ns" % (actualSampleIntervalNs, totalSamplingTime))
 
-def pico_acquire_measurement(discarded_portion = 0.0, plot = False):    
+def pico_acquire_measurement(channel_range, sampleInterval = ctypes.c_int32(250), sampleUnits = ps.PS4000_TIME_UNITS['PS4000_US'], sizeOfOneBuffer = 500, numBuffersToCapture = 10, maxPreTriggerSamples = 0, autoStopOn = 1, downsampleRatio = 1, discarded_portion = 0.0, plot = False):    
     global status
-    chandle = ctypes.c_int16()
+    totalSamples = sizeOfOneBuffer * numBuffersToCapture
+    actualSampleIntervalNs = actualSampleInterval * 1000
     
     status["runStreaming"] = ps.ps4000RunStreaming(chandle,
                                                 ctypes.byref(sampleInterval),
