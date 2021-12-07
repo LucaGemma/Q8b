@@ -2,9 +2,8 @@
 # coding: utf-8
 
 # # My Custom Module
-# 
 
-# In[2]:
+# In[ ]:
 
 
 # Required imports
@@ -45,7 +44,7 @@ logging.getLogger().setLevel(logging.INFO)
 chandle = ctypes.c_int16()
 
 
-# In[3]:
+# In[ ]:
 
 
 def from_linenumb_to_active_channel(line_numb, channel_steps):
@@ -135,7 +134,7 @@ def read_data(data_filename, FILE_PV = False):
         return {'measured voltage' : measured_voltage, 'measured current' : measured_current, 'PD voltage' : PD_voltage, 'PD current' : PD_current, 'channels' : channels}
 
 
-# In[4]:
+# In[ ]:
 
 
 def take_screenshot(save_path=os.getcwd()):
@@ -162,7 +161,7 @@ def take_screenshot(save_path=os.getcwd()):
 
 # ## Picoscope functions
 
-# In[5]:
+# In[ ]:
 
 
 def round_half_up(n, decimals=0):
@@ -199,12 +198,10 @@ def pico_start(channel_range, sampleInterval = ctypes.c_int32(250), sampleUnits 
     """
     
     # Size of capture
-    sizeOfOneBuffer = 500
-    numBuffersToCapture = 10
-
     totalSamples = sizeOfOneBuffer * numBuffersToCapture
     
     # Create status ready for use
+    global status 
     status = {}
 
     # Open PicoScope 2000 Series device
@@ -250,10 +247,14 @@ def pico_start(channel_range, sampleInterval = ctypes.c_int32(250), sampleUnits 
 
 
     # Create buffers ready for assigning pointers for data collection
+    global bufferAMax
     bufferAMax = np.zeros(shape=sizeOfOneBuffer, dtype=np.int16)
+    global bufferBMax
     bufferBMax = np.zeros(shape=sizeOfOneBuffer, dtype=np.int16)
     # We need a big buffer, not registered with the driver, to keep our complete capture in.
+    global bufferCompleteA
     bufferCompleteA = np.zeros(shape=totalSamples, dtype=np.int16)
+    global bufferCompleteB
     bufferCompleteB = np.zeros(shape=totalSamples, dtype=np.int16)
 
     memory_segment = 0
@@ -307,6 +308,7 @@ def pico_start(channel_range, sampleInterval = ctypes.c_int32(250), sampleUnits 
 def pico_acquire_measurement(channel_range, sampleInterval = ctypes.c_int32(250), sampleUnits = ps.PS4000_TIME_UNITS['PS4000_US'], sizeOfOneBuffer = 500, numBuffersToCapture = 10, maxPreTriggerSamples = 0, autoStopOn = 1, downsampleRatio = 1, discarded_portion = 0.0, plot = False):    
     global status
     totalSamples = sizeOfOneBuffer * numBuffersToCapture
+    actualSampleInterval = sampleInterval.value
     actualSampleIntervalNs = actualSampleInterval * 1000
     
     status["runStreaming"] = ps.ps4000RunStreaming(chandle,
@@ -367,8 +369,6 @@ def pico_acquire_measurement(channel_range, sampleInterval = ctypes.c_int32(250)
         plt.xlabel('Time (ns)')
         plt.ylabel('Voltage (mV)')
         plt.show()
-    print(len(adc2mVChAMax))
-    print(len(adc2mVChAMax[math.floor((len(adc2mVChAMax)-1)*discarded_portion):]))
     return round_half_up(mean(adc2mVChAMax[math.floor((len(adc2mVChAMax)-1)*discarded_portion):]),3); #round_half_up(mean(adc2mVChAMax),3);
 
 def pico_stop():
@@ -384,6 +384,11 @@ def pico_stop():
     status["close"] = ps.ps4000CloseUnit(chandle)
     assert_pico_ok(status["close"])
     return;
+
+
+# ## To Do
+
+# In[ ]:
 
 
 # os.chdir('./Log') 
@@ -606,9 +611,4 @@ def pico_stop():
 # 
 #     plt.tight_layout()
 #     plt.savefig('../Figures/' + filename + '.png')
-
-# In[ ]:
-
-
-
 
