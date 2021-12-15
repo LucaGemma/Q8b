@@ -13,7 +13,7 @@ sys.path.append('c:/users/'+ username +'/miniconda3/lib/site-packages')
 import picosdk
 import logging
 import ctypes
-from picosdk.ps4000 import ps4000 as ps #
+from picosdk.ps4000 import ps4000 as ps
 import matplotlib.pyplot as plt
 from picosdk.functions import adc2mV, assert_pico_ok
 from statistics import mean
@@ -344,7 +344,7 @@ def pico_acquire_measurement(channel_range, sampleInterval = ctypes.c_int32(250)
             # again.
             time.sleep(0.01)
     
-    logging.info("Done grabbing values.")
+    #logging.info("Done grabbing values.")
     
     # Find maximum ADC count value
     # handle = chandle
