@@ -143,7 +143,15 @@ def take_screenshot(image_name=datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_
     the timestamp as its name
     """
     #take a bitmap
-    wx.App()  # Need to create an App instance before doing anything
+    
+    # CAUTION! : if you get the error "The wx.App object must be created first!" 
+    #            comment the following line
+    
+    #wx.App()
+    
+    #            and in the main code, in the first cell (the import section), 
+    #            separated from the rest of the code, insert the line: app = wx.App(False)
+    
     screen = wx.ScreenDC()
     bmp = wx.Bitmap(screen_resolution[0], screen_resolution[1]) 
     mem = wx.MemoryDC(bmp)
