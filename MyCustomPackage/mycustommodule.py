@@ -137,7 +137,7 @@ def read_data(data_filename, FILE_PV = False):
 # In[ ]:
 
 
-def take_screenshot(save_path=os.getcwd()):
+def take_screenshot(image_name=datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S"), save_path=os.getcwd(), screen_resolution=[1920,1080]):
     """
     Take a screenshot of the entire screen and save it in the save_path directory with
     the timestamp as its name
@@ -145,18 +145,13 @@ def take_screenshot(save_path=os.getcwd()):
     #take a bitmap
     wx.App()  # Need to create an App instance before doing anything
     screen = wx.ScreenDC()
-    now = datetime.datetime.now() # retrieve current date and time (for file name)
-    size = screen.GetSize()
-    bmp = wx.Bitmap(size[0], size[1])
+    bmp = wx.Bitmap(screen_resolution[0], screen_resolution[1]) 
     mem = wx.MemoryDC(bmp)
-    mem.Blit(0, 0, size[0], size[1], screen, 0, 0)
+    mem.Blit(0, 0, screen_resolution[0], screen_resolution[1], screen, 0, 0) 
     del mem  # Release bitmap
     
-    #take the timestamp
-    timestamp = now.strftime("%Y_%m_%d_%H_%M_%S")
-    
     #save the screenshot in a png file 
-    bmp.SaveFile(save_path + '/' + timestamp + '.png', wx.BITMAP_TYPE_PNG) # it is saved where the ipynb is
+    bmp.SaveFile(save_path + '/' + image_name + '.png', wx.BITMAP_TYPE_PNG) # it is saved where the ipynb is
 
 
 # ## Picoscope functions
