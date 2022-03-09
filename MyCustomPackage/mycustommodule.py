@@ -137,7 +137,7 @@ def read_data(data_filename, FILE_PV = False):
 # In[ ]:
 
 
-def take_screenshot(image_name=datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S"), save_path=os.getcwd(), screen_resolution=[1920,1080]):
+def take_screenshot(xdest = 0, ydest= 0, xsrc = 0, ysrc = 0, image_name=datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S"), save_path=os.getcwd(), screen_resolution=[1920,1080]):
     """
     Take a screenshot of the entire screen and save it in the save_path directory with
     the timestamp as its name
@@ -155,7 +155,7 @@ def take_screenshot(image_name=datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_
     screen = wx.ScreenDC()
     bmp = wx.Bitmap(screen_resolution[0], screen_resolution[1]) 
     mem = wx.MemoryDC(bmp)
-    mem.Blit(0, 0, screen_resolution[0], screen_resolution[1], screen, 0, 0) 
+    mem.Blit(xdest, ydest, screen_resolution[0], screen_resolution[1], screen, xsrc, ysrc) 
     del mem  # Release bitmap
     
     #save the screenshot in a png file 
